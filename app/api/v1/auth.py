@@ -12,10 +12,13 @@ def register(user_data: UserRegister, db: Session = Depends(get_db)):
     existing_user = db.query(User).filter(User.email == user_data.email).first()
     if existing_user:
         raise HTTPException(status_code=400, detail="Email already registered")
-    
+     
+    print(f"Password string: '{user_data.password}'")
+    print(f"Password character length: {len(user_data.password)}")
+
     # Hash password and save user
     hashed_pwd = security.hash_password(user_data.password)
-    new_user = User(email=user_data.email, hashed_password=hashed_pwd)
+    new_user = User(email=user_data.email, password_hash=hashed_pwd)
     
     db.add(new_user)
     db.commit()
