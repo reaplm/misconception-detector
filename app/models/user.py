@@ -1,7 +1,7 @@
 import uuid
-from sqlalchemy import Column, String
+from sqlalchemy import Column, String, DateTime, create_engine  
 from sqlalchemy.dialects.postgresql import UUID  # Import PostgreSQL native UUID
-from sqlalchemy.orm import declarative_base
+from sqlalchemy.orm import declarative_base, sessionmaker
 
 # Database Connection 
 DATABASE_URL = "postgresql://admin_user:administrator@localhost:5432/misconception_db"
