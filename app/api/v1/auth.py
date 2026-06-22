@@ -28,7 +28,7 @@ def register(user_data: UserRegister, db: Session = Depends(get_db)):
 def login(user_data: UserRegister, db: Session = Depends(get_db)):
     # Find user by email
     user = db.query(User).filter(User.email == user_data.email).first()
-    if not user or not security.verify_password(user_data.password, user.hashed_password):
+    if not user or not security.verify_password(user_data.password, user.password_hash):
         raise HTTPException(status_code=401, detail="Invalid email or password")
     
     # Create and return JWT Token
