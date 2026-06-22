@@ -1,6 +1,7 @@
 from fastapi import FastAPI  
 from fastapi.middleware.cors import CORSMiddleware
-from app.api.v1 import auth  # Import your auth routes
+from app.api.v1 import auth, taxonomy, response  # Import your auth routes
+
 
 app = FastAPI(title="Misconception Detector API")
 
@@ -15,6 +16,10 @@ app.add_middleware(
 
 # 4. Include your authentication endpoints
 app.include_router(auth.router, prefix="/api/v1/auth", tags=["Auth"])
+
+# Register the split routers to activate the API mapping network
+app.include_router(taxonomy.router)
+app.include_router(response.router)
 
 @app.get("/")
 def root():
