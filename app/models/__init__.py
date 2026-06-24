@@ -1,4 +1,4 @@
 from app.models.taxonomy import MisconceptionTaxonomy
-from app.models.response import ExamResponse
+from app.models.response import DiagnosticQuestion
 
-__all__ = ["MisconceptionTaxonomy", "ExamResponse"]
+__all__ = ["MisconceptionTaxonomy", "DiagnosticQuestion"]
