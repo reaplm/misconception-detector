@@ -1,4 +1,4 @@
-from app.api.schemas.taxonomy import MisconceptionCreate, MisconceptionRead
-from app.api.schemas.response import ExamResponseCreate, ExamResponseRead
+from app.api.schemas.taxonomy import MisconceptionResponse
+from app.api.schemas.response import QuestionResponse
 
-__all__ = ["MisconceptionCreate", "MisconceptionRead", "ExamResponseCreate", "ExamResponseRead"]
+__all__ = ["QuestionResponse", "MisconceptionResponse"]
