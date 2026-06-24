@@ -1,44 +1,49 @@
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy.future import select
+from sqlalchemy.orm import selectinload
+from typing import List
+
+# ⚠️ Import your modern async dependency and models
 from app.database import get_db
-from app.models import ExamResponse
-from app.api.schemas import ExamResponseCreate, ExamResponseRead
+from app.models.response import DiagnosticQuestion
+from app.api.schemas.response import QuestionResponse
 
-router = APIRouter(prefix="/responses", tags=["Exam Evaluations"])
+router = APIRouter(
+    prefix="/questions",
+    tags=["Diagnostic Questions"]
+)
 
-@router.post("/analyze", response_model=ExamResponseRead, status_code=status.HTTP_201_CREATED)
-async def analyze_student_response(
-    payload: ExamResponseCreate, 
+@router.get("", response_model=List[QuestionResponse], summary="Fetch all test items")
+async def read_all_questions(
+    skip: int = Query(0, description="Pagination skip boundary counter offset"),
+    limit: int = Query(100, description="Max questions constraints limit"),
     db: AsyncSession = Depends(get_db)
 ):
-    """
-    Process incoming test responses, compute diagnostics, and log results.
-    """
-    # --- SIMULATED AI CORE LAYER ---
-    # Placeholder: If fractional error pattern is typed, map to taxonomy link
-    detected_id = None
-    if "2/5" in payload.student_answer:
-        detected_id = "MATH_FRAC_02"
-    # -------------------------------
-
-    db_response = ExamResponse(
-        student_id=payload.student_id,
-        question_text=payload.question_text,
-        student_answer=payload.student_answer,
-        detected_misconception_id=detected_id
-    )
-    
-    db.add(db_response)
-    await db.commit()
-    
-    # Eagerly load the transaction joined with its taxonomy lookup to satisfy the output schema
+    """Retrieves all questions from the database, populated with their associated misconception definitions."""
+    # ⚠️ Added 'selectinload' to eagerly fetch the linked misconception asynchronously 
+    # without causing lazy-loading crashes.
     query = (
-        select(ExamResponse)
-        .where(ExamResponse.id == db_response.id)
-        .outerjoin(ExamResponse.misconception)
+        select(DiagnosticQuestion)
+        .options(selectinload(DiagnosticQuestion.misconception))
+        .offset(skip)
+        .limit(limit)
     )
     result = await db.execute(query)
-    record = result.scalar_one()
+    questions = result.scalars().all()
+    return questions
+
+@router.get("/{question_id}", response_model=QuestionResponse, summary="Fetch specific test question item")
+async def read_question_by_id(question_id: int, db: AsyncSession = Depends(get_db)):
+    """Fetches an individual diagnostic test item along with its master remediation hints."""
+    query = (
+        select(DiagnosticQuestion)
+        .options(selectinload(DiagnosticQuestion.misconception))
+        .filter(DiagnosticQuestion.id == question_id)
+    )
+    result = await db.execute(query)
+    question = result.scalar_one_or_none()
     
-    return record
+    if not question:
+        raise HTTPException(status_code=404, detail=f"Diagnostic question configuration {question_id} not found")
+    return question
