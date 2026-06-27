@@ -22,7 +22,10 @@ def register(user_data: UserRegister, db: Session = Depends(get_db)):
     
     db.add(new_user)
     db.commit()
-    return {"message": "User registered successfully"}
+    return {
+        "message": "User registered successfully",
+        "success": True
+    }
 
 @router.post("/login", response_model=TokenResponse)
 def login(user_data: UserRegister, db: Session = Depends(get_db)):
