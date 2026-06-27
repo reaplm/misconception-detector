@@ -2,9 +2,9 @@ from pydantic import BaseModel
 
 class MisconceptionResponse(BaseModel):
     id: int
-    name: str
-    category: str
-    description: str
+    misconception_text: str
+    question_id: int
+
 
     class Config:
         from_attributes = True
