@@ -8,7 +8,7 @@ class QuestionResponse(BaseModel):
     best_answer: str
     category_id: Optional[int] 
 
-    misconceptions: List[MisconceptionResponse] = []
+    #misconceptions: List[MisconceptionResponse] = []
 
     class Config:
         from_attributes = True

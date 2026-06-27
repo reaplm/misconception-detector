@@ -18,8 +18,8 @@ app.add_middleware(
 app.include_router(auth.router, prefix="/api/v1/auth", tags=["Auth"])
 
 # Register the split routers to activate the API mapping network
-app.include_router(taxonomy.router)
-app.include_router(question.router)
+app.include_router(taxonomy.router, prefix="/api/v1")
+app.include_router(question.router, prefix="/api/v1")
 
 @app.get("/")
 def root():

@@ -25,12 +25,12 @@ async def read_all_questions(
     # without causing lazy-loading crashes.
     query = (
         select(DiagnosticQuestion)
-        .options(selectinload(DiagnosticQuestion.misconceptions))
+        #.options(selectinload(DiagnosticQuestion.misconceptions))
         .offset(skip)
         .limit(limit)
     )
     result = await db.execute(query)
-    questions = result.scalars().unique().all() # Unique prevents duplicates
+    questions = result.scalars().all() # Unique prevents duplicates
     return questions
 
 @router.get("/id/{question_id}", response_model=QuestionResponse, summary="Fetch specific test question item")
