@@ -1,4 +1,4 @@
 from app.api.schemas.taxonomy import MisconceptionResponse
-from app.api.schemas.response import QuestionResponse
+from app.api.schemas.question import QuestionResponse
 
-__all__ = ["QuestionResponse", "MisconceptionResponse"]
+__all__ = ["QuestionResponse", "MisconceptionResponse", "CategoryResponse"]
