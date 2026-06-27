@@ -23,7 +23,7 @@ async def read_all_misconceptions(db: AsyncSession = Depends(get_db)):
     taxonomy_list = result.scalars().all()
     return taxonomy_list
 
-@router.get("/{misconception_id}", response_model=MisconceptionResponse, summary="Fetch single misconception by ID")
+@router.get("/id/{misconception_id}", response_model=MisconceptionResponse, summary="Fetch single misconception by ID")
 async def read_misconception_by_id(misconception_id: int, db: AsyncSession = Depends(get_db)):
     """Retrieves a single abstract misconception record from the taxonomy database table."""
     query = select(MisconceptionTaxonomy).filter(MisconceptionTaxonomy.id == misconception_id)
