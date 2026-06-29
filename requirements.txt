@@ -418,6 +418,7 @@ Scrapy @ file:///Users/ec2-user/croot/scrapy_1780657764256/work
 seaborn @ file:///private/var/folders/nz/j6p8yfhx1mv_0grj5xl4650h0000gp/T/abs_74n8m1zz4r/croot/seaborn_1749110344248/work
 semver @ file:///opt/miniconda3/conda-bld/semver_1761903025781/work
 Send2Trash @ file:///Users/ec2-user/croot/send2trash_1768170599114/work
+sentence-transformers==2.2.2
 service-identity @ file:///Users/ec2-user/croot/service_identity_1780648878448/work
 setproctitle==1.3.7
 setuptools==82.0.1
