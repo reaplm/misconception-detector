@@ -7,12 +7,15 @@ from typing import List
 # async dependency and models
 from app.database import get_db
 from app.models.question import DiagnosticQuestion
-from app.api.schemas.question import QuestionResponse
+from app.api.schemas.question import QuestionResponse, QuestionListRequest, QuestionListResponse
+from app.services.question_service import QuestionService
 
 router = APIRouter(
     prefix="/questions",
     tags=["Diagnostic Questions"]
 )
+
+service = QuestionService()
 
 @router.get("", response_model=List[QuestionResponse], summary="Fetch all test items")
 async def read_all_questions(
@@ -47,4 +50,51 @@ async def read_question_by_id(question_id: int, db: AsyncSession = Depends(get_d
     
     if not question:
         raise HTTPException(status_code=404, detail=f"Diagnostic question configuration {question_id} not found")
+    return question
+
+@router.post("/batch", response_model=QuestionListResponse)
+async def get_questions_by_ids(request: QuestionListRequest, db: AsyncSession = Depends(get_db)):
+    """
+    Get questions by a list of IDs.
+    
+    Example request:
+    {
+        "question_ids": [1, 2, 3, 5, 8]
+    }
+    """
+    if not request.question_ids:
+        raise HTTPException(status_code=400, detail="question_ids list cannot be empty")
+    
+    # Remove duplicates and invalid IDs
+    unique_ids = list(set([id for id in request.question_ids if id > 0]))
+    
+    if not unique_ids:
+        raise HTTPException(status_code=400, detail="No valid question IDs provided")
+    
+    questions = await service.get_questions_by_ids(
+        question_ids=unique_ids,
+        db=db
+    )
+    
+    return {
+        "total": len(questions),
+        "questions": questions
+    }
+
+@router.get("/id/{question_id}", response_model=QuestionResponse)
+async def get_question_by_id(question_id: int, db: AsyncSession = Depends(get_db)):
+    """
+    Get a single question by ID.
+    """
+    if question_id <= 0:
+        raise HTTPException(status_code=400, detail="Invalid question ID")
+    
+    question = await service.get_question_by_id(
+        question_id=question_id,
+        db=db
+    )
+    
+    if not question:
+        raise HTTPException(status_code=404, detail=f"Question with ID {question_id} not found")
+    
     return question

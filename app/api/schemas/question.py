@@ -10,5 +10,13 @@ class QuestionResponse(BaseModel):
 
     #misconceptions: List[MisconceptionResponse] = []
 
+class QuestionListRequest(BaseModel):
+    question_ids: List[int]  # List of question IDs to fetch
+
+class QuestionListResponse(BaseModel):
+    total: int
+    questions: List[QuestionResponse]
+
+
     class Config:
         from_attributes = True
