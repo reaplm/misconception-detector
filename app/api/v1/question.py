@@ -21,6 +21,7 @@ service = QuestionService()
 async def read_all_questions(
     skip: int = Query(0, description="Pagination skip boundary counter offset"),
     limit: int = Query(100, description="Max questions constraints limit"),
+    include_misconceptions: bool = Query(False, description="Flag to eagerly fetch misconceptions"),
     db: AsyncSession = Depends(get_db)
 ):
     """Retrieves all questions from the database, populated with their associated misconception definitions."""
@@ -32,8 +33,13 @@ async def read_all_questions(
         .offset(skip)
         .limit(limit)
     )
+
+    if include_misconceptions:
+        query = query.options(selectinload(DiagnosticQuestion.misconceptions))
+        
+
     result = await db.execute(query)
-    questions = result.scalars().all() # Unique prevents duplicates
+    questions = result.scalars().unique().all() # Unique prevents duplicates
     return questions
 
 @router.get("/id/{question_id}", response_model=QuestionResponse, summary="Fetch specific test question item")

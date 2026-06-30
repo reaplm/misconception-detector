@@ -8,7 +8,7 @@ class QuestionResponse(BaseModel):
     best_answer: str
     category_id: Optional[int] 
 
-    #misconceptions: List[MisconceptionResponse] = []
+    misconceptions: Optional[List[MisconceptionResponse]] = None
 
 class QuestionListRequest(BaseModel):
     question_ids: List[int]  # List of question IDs to fetch
